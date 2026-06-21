@@ -1,0 +1,32 @@
+/* Self-hosted Outfit (SIL Open Font License 1.1). Loaded from the plugin so the
+   admin never reaches out to Google Fonts. Defined at document level on purpose:
+   the React UI mounts in a Shadow DOM and @font-face must live in the host
+   document for shadow text to resolve it. Paths are relative to this file. */
+@font-face {
+	font-family: 'Outfit';
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src: url('fonts/outfit-400.woff2') format('woff2');
+}
+@font-face {
+	font-family: 'Outfit';
+	font-style: normal;
+	font-weight: 500;
+	font-display: swap;
+	src: url('fonts/outfit-500.woff2') format('woff2');
+}
+@font-face {
+	font-family: 'Outfit';
+	font-style: normal;
+	font-weight: 600;
+	font-display: swap;
+	src: url('fonts/outfit-600.woff2') format('woff2');
+}
+@font-face {
+	font-family: 'Outfit';
+	font-style: normal;
+	font-weight: 700;
+	font-display: swap;
+	src: url('fonts/outfit-700.woff2') format('woff2');
+}

@@ -1,0 +1,23 @@
+# Dependencies (regenerated with yarn / composer)
+node_modules
+vendor
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+
+# Build artifacts (regenerated with `yarn build` / `yarn package`)
+build
+dist
+
+# Lockfile resolved against an in-repo path repository; not portable
+composer.lock
+
+# Tooling caches
+.phpunit.cache
+.phpunit.result.cache
+
+# Local env / OS noise
+.env
+.env.*
+*.log
+.DS_Store

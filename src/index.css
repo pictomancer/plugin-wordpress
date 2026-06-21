@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  /* Glass surfaces, mirrored from web/app.pictomancer.ai. */
+  .glass {
+    @apply bg-surface border border-surface-border backdrop-blur-glass shadow-glass;
+  }
+  .glass-sm {
+    @apply bg-surface border border-surface-border backdrop-blur-[16px] shadow-glass-sm;
+  }
+  .glass-hover {
+    @apply hover:bg-surface-hover hover:border-surface-border-hover transition-all duration-200;
+  }
+}
+
+/* Shadow-root canvas. The ambient gradient lives here (no body inside a shadow
+   tree), so it stays scoped to the plugin and never touches wp-admin. */
+.pic-root {
+  min-height: calc(100vh - 32px);
+  padding: 24px 28px 40px;
+  background-color: #09090b;
+  color: #fafafa;
+  font-family: 'Outfit', system-ui, sans-serif;
+  background-image:
+    radial-gradient(ellipse 60% 50% at 12% 0%, rgba(168, 85, 247, 0.1), transparent),
+    radial-gradient(ellipse 50% 40% at 100% 100%, rgba(59, 130, 246, 0.06), transparent);
+}
+
+.pic-root *,
+.pic-root *::before,
+.pic-root *::after {
+  box-sizing: border-box;
+}
