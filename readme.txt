@@ -1,5 +1,5 @@
 === Pictomancer Image Optimizer ===
-Contributors: sonirico
+Contributors: pictomancerai, sonirico
 Tags: image optimization, compression, performance, media library, images
 Requires at least: 6.0
 Tested up to: 7.0
