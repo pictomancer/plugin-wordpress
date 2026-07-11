@@ -1,0 +1,56 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # The tag is the source of truth: it must match both version declarations.
+      - name: Verify tag matches plugin version
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          HEADER=$(grep -oP '^\s*\*\s*Version:\s*\K[0-9.]+' pictomancer-image-optimizer.php)
+          STABLE=$(grep -oP '^Stable tag:\s*\K[0-9.]+' readme.txt)
+          if [ "$TAG" != "$HEADER" ] || [ "$TAG" != "$STABLE" ]; then
+            echo "Version mismatch: tag=$TAG header=$HEADER stable=$STABLE"
+            exit 1
+          fi
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          extensions: curl
+          coverage: none
+
+      - run: composer install --prefer-dist --no-progress
+      - run: ./vendor/bin/phpunit
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: corepack enable
+      - run: yarn install --immutable
+      - run: yarn test
+
+      # Ship only runtime dependencies; package.sh stages from vendor/.
+      - run: composer install --no-dev --prefer-dist --no-progress --optimize-autoloader
+
+      - run: sh bin/package.sh
+
+      - name: Attach zip to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" dist/pictomancer-image-optimizer.zip --repo "$GITHUB_REPOSITORY" --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" dist/pictomancer-image-optimizer.zip --repo "$GITHUB_REPOSITORY" --verify-tag --generate-notes
+          fi

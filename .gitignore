@@ -9,9 +9,6 @@ vendor
 build
 dist
 
-# Lockfile resolved against an in-repo path repository; not portable
-composer.lock
-
 # Tooling caches
 .phpunit.cache
 .phpunit.result.cache

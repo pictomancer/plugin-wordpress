@@ -14,11 +14,8 @@
     },
     "repositories": [
         {
-            "type": "path",
-            "url": "../../../../../sdks/php",
-            "options": {
-                "symlink": false
-            }
+            "type": "vcs",
+            "url": "https://github.com/pictomancer/php-sdk"
         }
     ],
     "autoload-dev": {
