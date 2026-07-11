@@ -1,6 +1,6 @@
 === Pictomancer Image Optimizer ===
-Contributors: pictomancerai
-Tags: image optimization, webp, compression, performance, media library
+Contributors: sonirico
+Tags: image optimization, compression, performance, media library, images
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 8.1
@@ -8,57 +8,40 @@ Stable tag: 0.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Automatically compress and convert WordPress media through the Pictomancer.ai API for faster pages and lower bandwidth.
+Automatically compress WordPress media through the Pictomancer.ai API for faster pages and lower bandwidth.
 
 == Description ==
 
-Pictomancer Image Optimizer automatically compresses and converts your images in WordPress and WooCommerce using the Pictomancer.ai optimization API. Enjoy faster load times, reduced bandwidth, and improved SEO. Features include customizable optimization profiles, a real-time dashboard, and advanced developer tools. Compatible with WebP, AVIF, WP-CLI, GraphQL, and more.
+Pictomancer Image Optimizer automatically compresses the images you upload to WordPress using the Pictomancer.ai optimization API. Smaller images mean faster load times, reduced bandwidth, and better Core Web Vitals.
 
-== Features ==
+The plugin hooks into the standard WordPress upload flow, so it works with anything that creates media library attachments -- the Media Library itself, WooCommerce product images, page builders, and so on.
 
-* Automatic optimization of images on upload (Media Library, WooCommerce, and more).
-* Optimizes the original upload and every generated thumbnail size (can be limited to the original in settings).
-* Plays nicely with thumbnail regeneration: regenerated sizes are re-optimized, the original is compressed only once.
-* Batch optimization tool for existing media with admin progress view.
-* Customizable optimization profiles: define presets for quality, dimensions, and formats.
-* Dashboard: real media savings, size reduction, and live API health.
-* Requeue failed optimizations automatically via WP Cron.
-* Feature flags: enable experimental features from the admin UI.
-* Debug mode: detailed logging for troubleshooting and development.
-* Multisite aware: per-site configuration and optional global stats.
-* WP-CLI commands: manage optimization tasks and settings from the command line.
-* REST API and GraphQL integration (if WPGraphQL is active).
-* Developer hooks: extensible architecture for custom workflows.
-* Compatible with popular SEO plugins (Yoast, RankMath, All in One SEO).
-* Advanced configuration for power users and enterprises.
+= Features =
+
+* Automatic optimization on upload: the original file and every generated thumbnail size are compressed through the API.
+* Thumbnail control: limit optimization to the original upload from the settings if you prefer.
+* Safe by design: an optimized file is only kept when it is actually smaller than the input, and the pristine `original_image` WordPress keeps for regeneration is never touched.
+* Regeneration friendly: if you regenerate thumbnails, the new sizes are re-optimized while the main file is never compressed twice (no generation loss).
+* Dashboard: real accumulated savings (bytes and percentage) and live API health, right in wp-admin.
+* Debug mode: optional logging to a protected, non-guessable file for troubleshooting.
+* Configuration via constants: define `PICTOMANCER_API_KEY` (and optionally `PICTOMANCER_API_URL`) in wp-config.php to keep secrets out of the database.
+* Developer hooks: `pictomancer_log` action and `pictomancer_debug_logging_enabled` filter for custom workflows.
 
 == Installation ==
 
-1. Download the plugin from https://pictomancer.ai or the official WordPress plugin directory.
+1. Download the plugin from the WordPress plugin directory.
 2. In your WordPress admin, go to Plugins > Add New > Upload Plugin.
 3. Select the ZIP file and click Install Now.
 4. Activate the plugin.
-5. Go to Pictomancer > Settings to configure your API endpoint, optimization profiles, and preferences.
+5. Go to the Pictomancer menu to configure your API key, compression quality, and preferences. Without an API key the plugin uses the Pictomancer.ai free tier.
 
 == Frequently Asked Questions ==
 
-= Is Pictomancer compatible with WooCommerce? =
-Yes, it automatically optimizes product images and gallery images in WooCommerce.
+= Does it work with WooCommerce? =
+Yes. Product and gallery images are regular media library attachments, so they are optimized on upload like any other image.
 
-= What formats are supported? =
-WebP, AVIF, JPEG, PNG, and more. You can customize output formats in the settings.
-
-= Can I create custom optimization profiles? =
-Yes, you can define multiple profiles for different image types, quality levels, and dimensions.
-
-= Does it support multisite? =
-Yes, each site can have its own configuration, or you can share global stats.
-
-= Is there a debug mode? =
-Yes, enable debug mode in settings to log detailed optimization and API activity.
-
-= Is it compatible with SEO plugins? =
-Yes, it works alongside Yoast, RankMath, and All in One SEO. Because optimization runs before offload and caching plugins act, it also composes with WP Offload Media, WP Stateless, and your CDN without extra configuration.
+= What image formats are supported? =
+JPEG, PNG, WebP, TIFF, and GIF. Images are compressed in their original format; format conversion is not part of this version.
 
 = Can I set the API key outside the database (wp-config.php / environment)? =
 Yes. Define the `PICTOMANCER_API_KEY` constant (and optionally `PICTOMANCER_API_URL`) in wp-config.php, for example `define( 'PICTOMANCER_API_KEY', getenv( 'PICTOMANCER_API_KEY' ) );`. When set, the constant takes precedence over the settings form, the field is shown read-only, and the secret is never stored in the database -- ideal for staging/production and version-controlled config. Leave it unset to manage the key from the admin form.
@@ -67,13 +50,16 @@ Yes. Define the `PICTOMANCER_API_KEY` constant (and optionally `PICTOMANCER_API_
 Yes, by design. Optimization runs right after WordPress generates the attachment sizes and before offloading plugins push files to your bucket, so the bytes that reach your S3/R2/GCS storage -- and therefore your CDN -- are already optimized. No extra configuration or cloud credentials are needed in Pictomancer.
 
 = Does it improve SEO? =
-Yes, it boosts loading speed and PageSpeed scores, which benefits your SEO and Core Web Vitals.
+Smaller images improve loading speed and PageSpeed scores, which benefits your Core Web Vitals and therefore SEO.
+
+= What happens if the API is unreachable? =
+The original image is kept untouched and the upload completes normally. Optimization failures never break your media library.
 
 == External services ==
 
-This plugin relies on one external service to function: the Pictomancer.ai image optimization API. This is the core service that performs the actual compression and format conversion; without it the plugin cannot optimize your media.
+This plugin relies on one external service to function: the Pictomancer.ai image optimization API. This is the core service that performs the actual compression; without it the plugin cannot optimize your media.
 
-What is sent and when: each time an image is optimized (on upload, when WordPress generates thumbnail sizes, or when you run the batch tool), the image bytes are sent to the API endpoint (https://api.pictomancer.ai by default, or the URL you configure in the settings) together with your API key, if you have set one, and the selected compression quality. The API returns the optimized image, which is saved in place. No data about your site's visitors is collected or sent.
+What is sent and when: each time an image is optimized (on upload or when WordPress generates thumbnail sizes), the image bytes are sent to the API endpoint (https://api.pictomancer.ai by default, or the URL you configure in the settings) together with your API key, if you have set one, and the selected compression quality. The API returns the optimized image, which is saved in place. No data about your site's visitors is collected or sent.
 
 This service is provided by Pictomancer.ai. By using the plugin you agree to its terms and privacy policy:
 
@@ -96,7 +82,7 @@ This regenerates build/pictomancer-admin.js.
 == Changelog ==
 
 = 0.1.0 =
-* Initial release with automatic and batch optimization, Magic Preview, customizable profiles, real-time dashboard, HTTP streaming, WP-CLI, GraphQL, developer hooks, debug mode, and multisite support.
+* Initial release: automatic compression of uploads and thumbnails, savings dashboard with live API health, debug logging, wp-config constants for API credentials.
 
 == Upgrade Notice ==
 

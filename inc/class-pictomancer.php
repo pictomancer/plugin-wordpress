@@ -16,20 +16,7 @@ class Pictomancer {
 	}
 
 	public function __construct() {
-		// Activation and deactivation hooks
-		register_activation_hook( __FILE__, [ $this, 'activate' ] );
-		register_deactivation_hook( __FILE__, [ $this, 'deactivate' ] );
-
-		// Other hooks and filters will be added here
 		$this->includes();
-	}
-
-	public function activate() {
-		// Activation logic
-	}
-
-	public function deactivate() {
-		// Deactivation logic
 	}
 
 	private function includes() {
@@ -43,14 +30,8 @@ class Pictomancer {
 		require_once plugin_dir_path( __FILE__ ) . 'class-pictomancer-stats.php';
 		require_once plugin_dir_path( __FILE__ ) . 'class-pictomancer-admin.php';
 		require_once plugin_dir_path( __FILE__ ) . 'class-pictomancer-optimization.php';
-		require_once plugin_dir_path( __FILE__ ) . 'class-pictomancer-settings.php';
 		require_once plugin_dir_path( __FILE__ ) . 'class-pictomancer-rest-api.php';
-		require_once plugin_dir_path( __FILE__ ) . 'class-pictomancer-batch.php';
-		require_once plugin_dir_path( __FILE__ ) . 'class-pictomancer-cli.php';
 		require_once plugin_dir_path( __FILE__ ) . 'class-pictomancer-debug.php';
-		require_once plugin_dir_path( __FILE__ ) . 'class-pictomancer-cron.php';
-		require_once plugin_dir_path( __FILE__ ) . 'class-pictomancer-graphql.php';
-		require_once plugin_dir_path( __FILE__ ) . 'class-pictomancer-woocommerce.php';
 	}
 
 }

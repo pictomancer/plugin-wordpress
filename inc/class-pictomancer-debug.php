@@ -22,11 +22,8 @@ class Pictomancer_Debug {
 
 	public function init_debug_mode() {
 		$options = get_option( 'pictomancer_settings' );
-		$network_options = is_multisite() ? get_site_option( 'pictomancer_network_settings' ) : [];
 
-		$debug_enabled = ( isset( $options['debug_mode'] ) && $options['debug_mode'] ) || ( isset( $network_options['debug_mode'] ) && $network_options['debug_mode'] );
-
-		if ( $debug_enabled ) {
+		if ( isset( $options['debug_mode'] ) && $options['debug_mode'] ) {
 			add_action( 'pictomancer_log', [ $this, 'write_log' ], 10, 2 );
 		}
 	}
