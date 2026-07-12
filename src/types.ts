@@ -4,10 +4,12 @@ export interface Stats {
   optimized_bytes: number;
   bytes_saved: number;
   reduction_pct: number;
+  enabled: boolean;
   api: { ok: boolean; detail: string };
 }
 
 export interface PluginSettings {
+  enabled: boolean;
   api_url: string;
   api_key: string;
   quality: string;

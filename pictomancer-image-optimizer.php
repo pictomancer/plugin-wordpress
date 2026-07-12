@@ -3,7 +3,7 @@
  * Plugin Name:       Pictomancer Image Optimizer
  * Plugin URI:        https://pictomancer.ai/integrations/wordpress
  * Description:       Real-time image optimization powered by Pictomancer.ai API.
- * Version:           0.1.0
+ * Version:           0.1.1
  * Requires at least: 6.0
  * Requires PHP:      8.1
  * Author:            Pictomancer.ai
@@ -18,6 +18,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'PICTOMANCER_VERSION', '0.1.0' );
+define( 'PICTOMANCER_VERSION', '0.1.1' );
 
 require_once plugin_dir_path( __FILE__ ) . 'inc/class-pictomancer.php';

@@ -3,6 +3,7 @@ import { type ApiError, getSettings, saveSettings } from '../api/client';
 import type { PluginSettings } from '../types';
 
 const EMPTY: PluginSettings = {
+  enabled: false,
   api_url: '',
   api_key: '',
   quality: '',
@@ -36,6 +37,7 @@ export default function Settings() {
     setStatus('saving');
     setError('');
     const payload: Partial<PluginSettings> = {
+      enabled: form.enabled,
       quality: form.quality,
       optimize_thumbnails: form.optimize_thumbnails,
       debug_mode: form.debug_mode,
@@ -56,6 +58,22 @@ export default function Settings() {
       <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
 
       <div className="glass mt-6 rounded-xl p-6 space-y-5">
+        <label className="flex items-start gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            className="mt-0.5 h-4 w-4 accent-accent"
+            checked={form.enabled}
+            onChange={(e) => update('enabled', e.target.checked)}
+          />
+          <span className="text-sm text-white/80">
+            Enable optimization
+            <span className="block text-xs text-white/40">
+              Off by default. While disabled, no image data leaves your site. When enabled, uploaded
+              images are sent to the Pictomancer API for compression.
+            </span>
+          </span>
+        </label>
+
         <div>
           <label htmlFor="api_url" className="block text-sm font-medium text-white/70 mb-1">
             API URL

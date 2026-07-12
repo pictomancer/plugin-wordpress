@@ -29,7 +29,14 @@ class Pictomancer_Optimization {
 			return $metadata;
 		}
 
-		$settings  = get_option( 'pictomancer_settings', [] );
+		$settings = get_option( 'pictomancer_settings', [] );
+
+		// Opt-in gate: until the admin explicitly enables optimization, no image
+		// bytes leave the site (WordPress.org guideline 7, no phoning home).
+		if ( ! (bool) ( $settings['enabled'] ?? false ) ) {
+			return $metadata;
+		}
+
 		$mime_type = (string) get_post_mime_type( $attachment_id );
 
 		$service = new Pictomancer_Optimizer_Service(

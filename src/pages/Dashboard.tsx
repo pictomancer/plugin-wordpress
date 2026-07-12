@@ -34,6 +34,13 @@ export default function Dashboard() {
 
       {stats && (
         <>
+          {!stats.enabled && (
+            <p className="mt-4 text-sm text-amber-300">
+              Optimization is disabled. No image data leaves your site until you enable it in
+              Settings.
+            </p>
+          )}
+
           <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <StatCard
               label="Media Saved"
@@ -53,9 +60,9 @@ export default function Dashboard() {
             />
             <StatCard
               label="API Health"
-              value={stats.api.ok ? 'Operational' : 'Unavailable'}
-              hint={stats.api.detail}
-              tone={stats.api.ok ? 'good' : 'bad'}
+              value={!stats.enabled ? 'Disabled' : stats.api.ok ? 'Operational' : 'Unavailable'}
+              hint={!stats.enabled ? 'Enable optimization in Settings' : stats.api.detail}
+              tone={!stats.enabled ? 'default' : stats.api.ok ? 'good' : 'bad'}
             />
           </div>
 

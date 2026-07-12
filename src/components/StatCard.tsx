@@ -6,8 +6,7 @@ interface StatCardProps {
 }
 
 export default function StatCard({ label, value, hint, tone = 'default' }: StatCardProps) {
-  const valueColor =
-    tone === 'good' ? 'text-lime' : tone === 'bad' ? 'text-red-400' : 'text-white';
+  const valueColor = tone === 'good' ? 'text-lime' : tone === 'bad' ? 'text-red-400' : 'text-white';
 
   return (
     <div className="glass glass-hover rounded-xl p-5">

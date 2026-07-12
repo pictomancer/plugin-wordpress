@@ -6,9 +6,61 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class Pictomancer_Admin {
 
+	const ENABLE_NOTICE_DISMISSED_META = 'pictomancer_enable_notice_dismissed';
+
 	public function __construct() {
 		add_action( 'admin_menu', [ $this, 'add_admin_menu' ] );
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
+		add_action( 'admin_notices', [ $this, 'render_enable_notice' ] );
+		add_action( 'admin_init', [ $this, 'dismiss_enable_notice' ] );
+	}
+
+	public function render_enable_notice() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		$settings = get_option( 'pictomancer_settings', [] );
+		if ( (bool) ( $settings['enabled'] ?? false ) ) {
+			return;
+		}
+
+		if ( get_user_meta( get_current_user_id(), self::ENABLE_NOTICE_DISMISSED_META, true ) ) {
+			return;
+		}
+
+		// The plugin page already shows its own state; the notice is for
+		// admins who haven't found it yet.
+		$screen = get_current_screen();
+		if ( $screen && 'toplevel_page_pictomancer' === $screen->id ) {
+			return;
+		}
+
+		printf(
+			'<div class="notice notice-info"><p>%s <a href="%s">%s</a> <a href="%s">%s</a></p></div>',
+			esc_html__( 'Pictomancer Image Optimizer is active but optimization is off, so no image data leaves your site.', 'pictomancer-image-optimizer' ),
+			esc_url( admin_url( 'admin.php?page=pictomancer' ) ),
+			esc_html__( 'Enable it in the Pictomancer settings.', 'pictomancer-image-optimizer' ),
+			esc_url( wp_nonce_url( add_query_arg( 'pictomancer-dismiss-notice', '1' ), 'pictomancer-dismiss-notice' ) ),
+			esc_html__( 'Dismiss', 'pictomancer-image-optimizer' )
+		);
+	}
+
+	public function dismiss_enable_notice() {
+		if ( ! isset( $_GET['pictomancer-dismiss-notice'] ) ) {
+			return;
+		}
+
+		check_admin_referer( 'pictomancer-dismiss-notice' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		update_user_meta( get_current_user_id(), self::ENABLE_NOTICE_DISMISSED_META, 1 );
+
+		wp_safe_redirect( remove_query_arg( [ 'pictomancer-dismiss-notice', '_wpnonce' ] ) );
+		exit;
 	}
 
 	public function add_admin_menu() {

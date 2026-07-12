@@ -55,6 +55,7 @@ class Pictomancer_REST_API {
 		$locked = $this->locked_keys();
 
 		$settings = [
+			'enabled'             => (bool) ( $stored['enabled'] ?? false ),
 			'api_url'             => $locked['api_url'] ? '' : (string) ( $stored['api_url'] ?? '' ),
 			'api_key'             => $locked['api_key'] ? '' : (string) ( $stored['api_key'] ?? '' ),
 			'quality'             => (string) ( $stored['quality'] ?? '' ),
@@ -72,6 +73,9 @@ class Pictomancer_REST_API {
 
 		// Merge known keys into the existing option; never clobber unsent fields,
 		// and never overwrite a key pinned by a wp-config constant.
+		if ( array_key_exists( 'enabled', $input ) ) {
+			$stored['enabled'] = (int) (bool) $input['enabled'];
+		}
 		if ( ! $locked['api_url'] && array_key_exists( 'api_url', $input ) ) {
 			$stored['api_url'] = esc_url_raw( (string) $input['api_url'] );
 		}
@@ -115,18 +119,25 @@ class Pictomancer_REST_API {
 	}
 
 	public function get_stats() {
-		$stats        = ( new Pictomancer_Stats() )->get();
-		$stats['api'] = $this->api_health();
+		$settings = $this->stored_settings();
+		$enabled  = (bool) ( $settings['enabled'] ?? false );
+
+		$stats            = ( new Pictomancer_Stats() )->get();
+		$stats['enabled'] = $enabled;
+		// While optimization is off the plugin makes no remote calls at all,
+		// including this health probe.
+		$stats['api'] = $enabled
+			? $this->api_health( $settings )
+			: [ 'ok' => false, 'detail' => 'disabled' ];
 
 		return new WP_REST_Response( $stats );
 	}
 
 	/**
+	 * @param array<string, mixed> $settings
 	 * @return array<string, bool|string>
 	 */
-	private function api_health() {
-		$settings = get_option( 'pictomancer_settings', [] );
-
+	private function api_health( array $settings ) {
 		try {
 			$info = Pictomancer_Client_Factory::create( $settings )->info();
 			return [ 'ok' => true, 'detail' => (string) ( $info['version'] ?? 'operational' ) ];
