@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face {
+    font-family: 'Outfit';
+    src: url('outfit-400.woff2') format('woff2');
+    font-weight: 400;
+  }
+  @font-face {
+    font-family: 'Outfit';
+    src: url('outfit-700.woff2') format('woff2');
+    font-weight: 700;
+  }
+  * { margin: 0; padding: 0; }
+  html, body { width: 1544px; height: 500px; overflow: hidden; }
+  body {
+    background: #09090b;
+    font-family: 'Outfit', sans-serif;
+    position: relative;
+  }
+  .glow {
+    position: absolute;
+    width: 1100px;
+    height: 1100px;
+    left: 220px;
+    top: -300px;
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.22) 0%, rgba(168, 85, 247, 0) 65%);
+  }
+  .wrap {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 44px;
+  }
+  .logo { width: 200px; height: 200px; }
+  .text { display: flex; flex-direction: column; gap: 10px; }
+  .wordmark {
+    font-size: 96px;
+    font-weight: 700;
+    color: #fafafa;
+    letter-spacing: -2px;
+    line-height: 1;
+  }
+  .wordmark .ai { color: #a855f7; }
+  .tagline {
+    font-size: 34px;
+    font-weight: 400;
+    color: #71717a;
+  }
+  .tagline b { font-weight: 400; color: #C8FF00; }
+</style>
+</head>
+<body>
+  <div class="glow"></div>
+  <div class="wrap">
+    <img class="logo" src="pictomancer-icon.svg" alt="">
+    <div class="text">
+      <div class="wordmark">pictomancer<span class="ai">.ai</span></div>
+      <div class="tagline">Image optimization for WordPress. <b>Faster pages, lower bandwidth.</b></div>
+    </div>
+  </div>
+</body>
+</html>
