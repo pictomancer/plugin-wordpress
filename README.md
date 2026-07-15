@@ -2,6 +2,8 @@
 
 Source code for the [Pictomancer Image Optimizer](https://pictomancer.ai/integrations/wordpress) WordPress plugin. It compresses and converts WordPress media through the [Pictomancer.ai](https://pictomancer.ai) optimization API.
 
+Install it from the WordPress.org plugin directory: [wordpress.org/plugins/pictomancer-image-optimizer](https://wordpress.org/plugins/pictomancer-image-optimizer/).
+
 This repository is the public source mirror, including the build tooling for the admin interface bundle (`build/pictomancer-admin.js`), which is compiled from the React/TypeScript sources under `src/`.
 
 ## Build
