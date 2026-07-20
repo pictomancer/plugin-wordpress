@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "702350df29b436e9d80fb0ffd198f14a",
+    "content-hash": "7e37e34eb5aa3c7ebc00182b92b0ea3e",
     "packages": [
         {
             "name": "pictomancer/pictomancer",
-            "version": "v0.1.0",
+            "version": "v0.2.0",
             "source": {
                 "type": "git",
-                "url": "git@github.com:pictomancer/php-sdk.git",
-                "reference": "4bb557784118e1f4e085a5dff90f05e0d006ea6d"
+                "url": "https://github.com/pictomancer/php-sdk.git",
+                "reference": "e86803588d98b1f41a8b4b84b1e9eb0361c51604"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pictomancer/php-sdk/zipball/4bb557784118e1f4e085a5dff90f05e0d006ea6d",
-                "reference": "4bb557784118e1f4e085a5dff90f05e0d006ea6d",
+                "url": "https://api.github.com/repos/pictomancer/php-sdk/zipball/e86803588d98b1f41a8b4b84b1e9eb0361c51604",
+                "reference": "e86803588d98b1f41a8b4b84b1e9eb0361c51604",
                 "shasum": ""
             },
             "require": {
@@ -58,7 +58,11 @@
                 "resize",
                 "webp"
             ],
-            "time": "2026-07-11T17:33:44+00:00"
+            "support": {
+                "source": "https://github.com/pictomancer/php-sdk/tree/v0.2.0",
+                "issues": "https://github.com/pictomancer/php-sdk/issues"
+            },
+            "time": "2026-07-19T18:23:36+00:00"
         }
     ],
     "packages-dev": [
@@ -1717,7 +1721,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
@@ -1725,6 +1729,6 @@
         "ext-curl": "*",
         "ext-json": "*"
     },
-    "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "platform-dev": {},
+    "plugin-api-version": "2.9.0"
 }
