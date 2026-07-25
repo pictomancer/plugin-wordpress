@@ -3,7 +3,7 @@
  * Plugin Name:       Pictomancer Image Optimizer
  * Plugin URI:        https://pictomancer.ai/integrations/wordpress
  * Description:       Real-time image optimization powered by Pictomancer.ai API.
- * Version:           0.1.1
+ * Version:           0.1.2
  * Requires at least: 6.0
  * Requires PHP:      8.1
  * Author:            Pictomancer.ai
@@ -18,6 +18,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'PICTOMANCER_VERSION', '0.1.1' );
+define( 'PICTOMANCER_VERSION', '0.1.2' );
 
 require_once plugin_dir_path( __FILE__ ) . 'inc/class-pictomancer.php';
+
+// Boot on plugins_loaded, never at file scope: WordPress loads pluggable.php
+// (wp_hash and friends) only after every plugin file, so constructing anything
+// that touches a pluggable function earlier fatals the whole site.
+add_action( 'plugins_loaded', [ 'Pictomancer', 'get_instance' ] );

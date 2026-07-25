@@ -4,7 +4,7 @@ Tags: image optimization, compression, performance, media library, images
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.1.1
+Stable tag: 0.1.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -89,6 +89,9 @@ This regenerates build/pictomancer-admin.js.
 
 == Changelog ==
 
+= 0.1.2 =
+* Fix a fatal error that could take the whole site down: the plugin no longer constructs anything at load time, so functions WordPress defines after plugins load (wp_hash) are never called too early. Booting now happens on plugins_loaded and the debug log path is resolved lazily.
+
 = 0.1.1 =
 * Optimization is now opt-in and off by default: no remote requests (uploads or health checks) are made until it is enabled in the settings.
 * New "Enable optimization" toggle in the settings and an admin notice pointing to it.
@@ -97,6 +100,9 @@ This regenerates build/pictomancer-admin.js.
 * Initial release: automatic compression of uploads and thumbnails, savings dashboard with live API health, debug logging, wp-config constants for API credentials.
 
 == Upgrade Notice ==
+
+= 0.1.2 =
+Fixes a fatal error on some sites. Update as soon as possible.
 
 = 0.1.1 =
 Optimization is now off by default; enable it in the Pictomancer settings after updating.

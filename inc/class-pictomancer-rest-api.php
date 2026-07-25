@@ -158,5 +158,3 @@ class Pictomancer_REST_API {
 		return new WP_REST_Response( [ 'success' => true ] );
 	}
 }
-
-new Pictomancer_REST_API();

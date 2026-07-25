@@ -8,6 +8,11 @@ class Pictomancer {
 
 	protected static $instance = null;
 
+	private $admin;
+	private $optimization;
+	private $rest_api;
+	private $debug;
+
 	public static function get_instance() {
 		if ( null === self::$instance ) {
 			self::$instance = new self();
@@ -17,6 +22,11 @@ class Pictomancer {
 
 	public function __construct() {
 		$this->includes();
+
+		$this->admin        = new Pictomancer_Admin();
+		$this->optimization = new Pictomancer_Optimization();
+		$this->rest_api     = new Pictomancer_REST_API();
+		$this->debug        = new Pictomancer_Debug();
 	}
 
 	private function includes() {
@@ -35,5 +45,3 @@ class Pictomancer {
 	}
 
 }
-
-Pictomancer::get_instance();

@@ -128,5 +128,3 @@ class Pictomancer_Optimization {
 		return 'wordpress-plugin/' . PICTOMANCER_VERSION . ' wp/' . get_bloginfo( 'version' );
 	}
 }
-
-new Pictomancer_Optimization();

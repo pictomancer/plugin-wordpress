@@ -128,5 +128,3 @@ class Pictomancer_Admin {
 		);
 	}
 }
-
-new Pictomancer_Admin();
