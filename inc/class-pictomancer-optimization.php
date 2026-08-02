@@ -43,6 +43,8 @@ class Pictomancer_Optimization {
 			Pictomancer_Client_Factory::create( $settings, $this->integration() ),
 			(int) ( $settings['quality'] ?? 0 ),
 			(string) ( $settings['output_format'] ?? '' ),
+			(string) ( $settings['compression_mode'] ?? Pictomancer_Optimizer_Service::MODE_FIXED ),
+			(float) ( $settings['quality_target'] ?? 0 ),
 		);
 
 		if ( ! $service->is_supported( $mime_type ) ) {

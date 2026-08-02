@@ -4,7 +4,7 @@ Tags: image optimization, compression, performance, media library, images
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.1.2
+Stable tag: 0.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -23,6 +23,7 @@ The plugin hooks into the standard WordPress upload flow, so it works with anyth
 * Opt-in by design: optimization is disabled until you turn it on; nothing is sent anywhere by default.
 * Automatic optimization on upload: once enabled, the original file and every generated thumbnail size are compressed through the API.
 * Thumbnail control: limit optimization to the original upload from the settings if you prefer.
+* Quality target (SSIM) mode: instead of a fixed quality value, the API picks the best quality automatically -- the smallest file that still meets your visual similarity target. Costs slightly more per image; already-optimized images are returned untouched and free. Applies to JPEG, WebP and AVIF; other formats keep fixed quality.
 * Safe by design: an optimized file is only kept when it is actually smaller than the input, and the pristine `original_image` WordPress keeps for regeneration is never touched.
 * Regeneration friendly: if you regenerate thumbnails, the new sizes are re-optimized while the main file is never compressed twice (no generation loss).
 * Dashboard: real accumulated savings (bytes and percentage) and live API health, right in wp-admin.
@@ -89,6 +90,10 @@ This regenerates build/pictomancer-admin.js.
 
 == Changelog ==
 
+= 0.2.0 =
+* New "Compression mode" setting: choose between the existing fixed quality and a new quality target (SSIM) mode where the API finds the smallest file that still meets a visual similarity target (0.80-1.00, default 0.95).
+* Quality target applies to JPEG, WebP and AVIF; PNG and GIF automatically fall back to fixed quality.
+
 = 0.1.2 =
 * Fix a fatal error that could take the whole site down: the plugin no longer constructs anything at load time, so functions WordPress defines after plugins load (wp_hash) are never called too early. Booting now happens on plugins_loaded and the debug log path is resolved lazily.
 
@@ -100,6 +105,9 @@ This regenerates build/pictomancer-admin.js.
 * Initial release: automatic compression of uploads and thumbnails, savings dashboard with live API health, debug logging, wp-config constants for API credentials.
 
 == Upgrade Notice ==
+
+= 0.2.0 =
+Adds an optional quality target (SSIM) compression mode. Existing settings and the default fixed-quality behavior are unchanged.
 
 = 0.1.2 =
 Fixes a fatal error on some sites. Update as soon as possible.

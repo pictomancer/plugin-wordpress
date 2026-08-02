@@ -14,11 +14,16 @@ final class OptimizerServiceTest extends TestCase
     private const JPEG_BYTES = "\xFF\xD8\xFFoptimized";
     private const RAW = 'rawimagebytes';
 
-    private function newService(RecordingTransport $transport, int $quality = 0, string $format = ''): Pictomancer_Optimizer_Service
-    {
+    private function newService(
+        RecordingTransport $transport,
+        int $quality = 0,
+        string $format = '',
+        string $mode = Pictomancer_Optimizer_Service::MODE_FIXED,
+        float $target = 0.0,
+    ): Pictomancer_Optimizer_Service {
         $client = new Client('k', Client::DEFAULT_BASE_URL, 30.0, $transport);
 
-        return new Pictomancer_Optimizer_Service($client, $quality, $format);
+        return new Pictomancer_Optimizer_Service($client, $quality, $format, $mode, $target);
     }
 
     private function imageResponse(string $bytes): Response
@@ -95,6 +100,85 @@ final class OptimizerServiceTest extends TestCase
         $service->optimize_bytes(self::RAW, 'image/png');
 
         $this->assertArrayNotHasKey('format', $transport->lastBody());
+    }
+
+    public function testQualityTargetModeSendsTargetAndSourceFormatWithoutQ(): void
+    {
+        $transport = new RecordingTransport($this->imageResponse(self::JPEG_BYTES));
+        $service = $this->newService($transport, quality: 80, mode: Pictomancer_Optimizer_Service::MODE_QUALITY_TARGET, target: 0.92);
+
+        $service->optimize_bytes(self::RAW, 'image/jpeg');
+
+        $body = $transport->lastBody();
+        $this->assertSame(0.92, $body['quality_target']);
+        $this->assertSame('jpeg', $body['format']);
+        $this->assertArrayNotHasKey('q', $body);
+    }
+
+    public function testQualityTargetModeDefaultsTargetWhenUnset(): void
+    {
+        $transport = new RecordingTransport($this->imageResponse(self::JPEG_BYTES));
+        $service = $this->newService($transport, mode: Pictomancer_Optimizer_Service::MODE_QUALITY_TARGET);
+
+        $service->optimize_bytes(self::RAW, 'image/webp');
+
+        $this->assertSame(0.95, $transport->lastBody()['quality_target']);
+    }
+
+    public function testQualityTargetModeStillRequestsStrip(): void
+    {
+        $transport = new RecordingTransport($this->imageResponse(self::JPEG_BYTES));
+        $service = $this->newService($transport, mode: Pictomancer_Optimizer_Service::MODE_QUALITY_TARGET);
+
+        $service->optimize_bytes(self::RAW, 'image/jpeg');
+
+        $this->assertTrue($transport->lastBody()['strip']);
+    }
+
+    public function testQualityTargetModeFallsBackToFixedQualityForPng(): void
+    {
+        $transport = new RecordingTransport($this->imageResponse(self::JPEG_BYTES));
+        $service = $this->newService($transport, quality: 80, mode: Pictomancer_Optimizer_Service::MODE_QUALITY_TARGET, target: 0.92);
+
+        $service->optimize_bytes(self::RAW, 'image/png');
+
+        $body = $transport->lastBody();
+        $this->assertArrayNotHasKey('quality_target', $body);
+        $this->assertSame(80, $body['q']);
+    }
+
+    public function testQualityTargetModeUsesOutputFormatWhenConverting(): void
+    {
+        $transport = new RecordingTransport($this->imageResponse(self::JPEG_BYTES));
+        $service = $this->newService($transport, format: 'webp', mode: Pictomancer_Optimizer_Service::MODE_QUALITY_TARGET, target: 0.92);
+
+        $service->optimize_bytes(self::RAW, 'image/png');
+
+        $body = $transport->lastBody();
+        $this->assertSame(0.92, $body['quality_target']);
+        $this->assertSame('webp', $body['format']);
+    }
+
+    public function testQualityTargetModeFallsBackWhenConvertingToUnsupportedFormat(): void
+    {
+        $transport = new RecordingTransport($this->imageResponse(self::JPEG_BYTES));
+        $service = $this->newService($transport, quality: 80, format: 'png', mode: Pictomancer_Optimizer_Service::MODE_QUALITY_TARGET, target: 0.92);
+
+        $service->optimize_bytes(self::RAW, 'image/jpeg');
+
+        $body = $transport->lastBody();
+        $this->assertArrayNotHasKey('quality_target', $body);
+        $this->assertSame('png', $body['format']);
+    }
+
+    public function testFixedModeNeverSendsQualityTarget(): void
+    {
+        $transport = new RecordingTransport($this->imageResponse(self::JPEG_BYTES));
+        $service = $this->newService($transport, quality: 80, target: 0.92);
+
+        $service->optimize_bytes(self::RAW, 'image/jpeg');
+
+        $this->assertArrayNotHasKey('quality_target', $transport->lastBody());
     }
 
     /** @return array<string, mixed> */

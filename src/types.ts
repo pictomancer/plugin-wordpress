@@ -13,6 +13,8 @@ export interface PluginSettings {
   api_url: string;
   api_key: string;
   quality: string;
+  compression_mode: 'fixed' | 'quality_target';
+  quality_target: string;
   optimize_thumbnails: boolean;
   debug_mode: boolean;
 }

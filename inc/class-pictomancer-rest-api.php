@@ -59,6 +59,8 @@ class Pictomancer_REST_API {
 			'api_url'             => $locked['api_url'] ? '' : (string) ( $stored['api_url'] ?? '' ),
 			'api_key'             => $locked['api_key'] ? '' : (string) ( $stored['api_key'] ?? '' ),
 			'quality'             => (string) ( $stored['quality'] ?? '' ),
+			'compression_mode'    => (string) ( $stored['compression_mode'] ?? Pictomancer_Optimizer_Service::MODE_FIXED ),
+			'quality_target'      => (string) ( $stored['quality_target'] ?? '' ),
 			'optimize_thumbnails' => (bool) ( $stored['optimize_thumbnails'] ?? true ),
 			'debug_mode'          => (bool) ( $stored['debug_mode'] ?? false ),
 		];
@@ -85,6 +87,16 @@ class Pictomancer_REST_API {
 		if ( array_key_exists( 'quality', $input ) ) {
 			$quality           = (string) $input['quality'];
 			$stored['quality'] = $quality === '' ? '' : max( 0, min( 100, (int) $quality ) );
+		}
+		if ( array_key_exists( 'compression_mode', $input ) ) {
+			$mode                       = (string) $input['compression_mode'];
+			$stored['compression_mode'] = Pictomancer_Optimizer_Service::MODE_QUALITY_TARGET === $mode
+				? Pictomancer_Optimizer_Service::MODE_QUALITY_TARGET
+				: Pictomancer_Optimizer_Service::MODE_FIXED;
+		}
+		if ( array_key_exists( 'quality_target', $input ) ) {
+			$target                   = (string) $input['quality_target'];
+			$stored['quality_target'] = $target === '' ? '' : max( 0.8, min( 1.0, (float) $target ) );
 		}
 		if ( array_key_exists( 'optimize_thumbnails', $input ) ) {
 			$stored['optimize_thumbnails'] = (int) (bool) $input['optimize_thumbnails'];

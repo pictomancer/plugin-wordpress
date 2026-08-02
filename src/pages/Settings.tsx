@@ -7,6 +7,8 @@ const EMPTY: PluginSettings = {
   api_url: '',
   api_key: '',
   quality: '',
+  compression_mode: 'fixed',
+  quality_target: '',
   optimize_thumbnails: true,
   debug_mode: false,
 };
@@ -39,6 +41,8 @@ export default function Settings() {
     const payload: Partial<PluginSettings> = {
       enabled: form.enabled,
       quality: form.quality,
+      compression_mode: form.compression_mode,
+      quality_target: form.quality_target,
       optimize_thumbnails: form.optimize_thumbnails,
       debug_mode: form.debug_mode,
     };
@@ -116,20 +120,65 @@ export default function Settings() {
         </div>
 
         <div>
-          <label htmlFor="quality" className="block text-sm font-medium text-white/70 mb-1">
-            Quality
+          <label htmlFor="compression_mode" className="block text-sm font-medium text-white/70 mb-1">
+            Compression mode
           </label>
-          <input
-            id="quality"
-            type="number"
-            min={0}
-            max={100}
-            className={`${inputClass} max-w-32`}
-            value={form.quality}
-            onChange={(e) => update('quality', e.target.value)}
-          />
-          <p className="mt-1 text-xs text-white/40">1-100. Leave empty for the API default.</p>
+          <select
+            id="compression_mode"
+            className={`${inputClass} max-w-64`}
+            value={form.compression_mode}
+            onChange={(e) =>
+              update('compression_mode', e.target.value as PluginSettings['compression_mode'])
+            }
+          >
+            <option value="fixed">Fixed quality</option>
+            <option value="quality_target">Quality target (SSIM)</option>
+          </select>
+          <p className="mt-1 text-xs text-white/40">
+            {form.compression_mode === 'quality_target'
+              ? 'Picks the best quality automatically: the API finds the smallest file that still meets the visual similarity target. Costs slightly more per image; already-optimized images come back untouched and free. JPEG, WebP and AVIF only - other formats keep fixed quality.'
+              : 'Compress every image with the same quality value.'}
+          </p>
         </div>
+
+        {form.compression_mode === 'quality_target' ? (
+          <div>
+            <label htmlFor="quality_target" className="block text-sm font-medium text-white/70 mb-1">
+              Quality target
+            </label>
+            <input
+              id="quality_target"
+              type="number"
+              min={0.8}
+              max={1}
+              step={0.01}
+              placeholder="0.95"
+              className={`${inputClass} max-w-32`}
+              value={form.quality_target}
+              onChange={(e) => update('quality_target', e.target.value)}
+            />
+            <p className="mt-1 text-xs text-white/40">
+              0.80-1.00. Leave empty for the default (0.95). Higher keeps more detail, lower saves
+              more bytes.
+            </p>
+          </div>
+        ) : (
+          <div>
+            <label htmlFor="quality" className="block text-sm font-medium text-white/70 mb-1">
+              Quality
+            </label>
+            <input
+              id="quality"
+              type="number"
+              min={0}
+              max={100}
+              className={`${inputClass} max-w-32`}
+              value={form.quality}
+              onChange={(e) => update('quality', e.target.value)}
+            />
+            <p className="mt-1 text-xs text-white/40">1-100. Leave empty for the API default.</p>
+          </div>
+        )}
 
         <label className="flex items-start gap-3 cursor-pointer">
           <input

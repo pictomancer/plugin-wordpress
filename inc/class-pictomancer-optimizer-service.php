@@ -18,14 +18,33 @@ class Pictomancer_Optimizer_Service {
 	 */
 	const MAX_SOURCE_BYTES = 32 * 1024 * 1024;
 
+	const MODE_FIXED          = 'fixed';
+	const MODE_QUALITY_TARGET = 'quality_target';
+
+	const DEFAULT_QUALITY_TARGET = 0.95;
+
+	/**
+	 * Formats the API accepts `quality_target` for. Anything else (png, gif,
+	 * tiff) is rejected with a 422, so those keep the fixed-quality call.
+	 */
+	const QUALITY_TARGET_FORMATS = [
+		'image/jpeg' => 'jpeg',
+		'image/webp' => 'webp',
+		'image/avif' => 'avif',
+	];
+
 	private \Pictomancer\Client $client;
 	private int $quality;
 	private string $output_format;
+	private string $compression_mode;
+	private float $quality_target;
 
-	public function __construct( \Pictomancer\Client $client, int $quality = 0, string $output_format = '' ) {
-		$this->client        = $client;
-		$this->quality       = $quality;
-		$this->output_format = strtolower( trim( $output_format ) );
+	public function __construct( \Pictomancer\Client $client, int $quality = 0, string $output_format = '', string $compression_mode = self::MODE_FIXED, float $quality_target = 0.0 ) {
+		$this->client           = $client;
+		$this->quality          = $quality;
+		$this->output_format    = strtolower( trim( $output_format ) );
+		$this->compression_mode = $compression_mode;
+		$this->quality_target   = $quality_target;
 	}
 
 	public function is_supported( string $mime_type ): bool {
@@ -94,7 +113,7 @@ class Pictomancer_Optimizer_Service {
 	 */
 	public function optimize_bytes( string $bytes, string $mime_type ): string {
 		$source  = $this->to_data_uri( $bytes, $mime_type );
-		$options = $this->compress_options();
+		$options = $this->compress_options( $mime_type );
 
 		$result = $this->client->compress( $source, $options );
 
@@ -112,7 +131,18 @@ class Pictomancer_Optimizer_Service {
 	}
 
 	/** @return array<string, mixed> */
-	private function compress_options(): array {
+	private function compress_options( string $mime_type ): array {
+		$target_format = $this->quality_target_format( $mime_type );
+		if ( $this->compression_mode === self::MODE_QUALITY_TARGET && $target_format !== '' ) {
+			// quality_target is mutually exclusive with `q` and requires an
+			// explicit `format`, or the API rejects the request.
+			return [
+				'strip'          => true,
+				'quality_target' => $this->quality_target > 0 ? $this->quality_target : self::DEFAULT_QUALITY_TARGET,
+				'format'         => $target_format,
+			];
+		}
+
 		$options = [ 'strip' => true ];
 		if ( $this->quality > 0 ) {
 			$options['q'] = $this->quality;
@@ -122,5 +152,19 @@ class Pictomancer_Optimizer_Service {
 		}
 
 		return $options;
+	}
+
+	/**
+	 * Resolves the explicit `format` a quality_target request must carry: the
+	 * configured output format when converting, otherwise the source format so
+	 * jpeg stays jpeg. Empty when the effective format does not support
+	 * quality_target, which sends that file down the fixed-quality path.
+	 */
+	private function quality_target_format( string $mime_type ): string {
+		$format = $this->output_format !== ''
+			? $this->output_format
+			: ( self::QUALITY_TARGET_FORMATS[ strtolower( $mime_type ) ] ?? '' );
+
+		return in_array( $format, self::QUALITY_TARGET_FORMATS, true ) ? $format : '';
 	}
 }
