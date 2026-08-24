@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "766a32e5341c96849c19c90bab55ebae",
+    "content-hash": "aad9ebb519e5e7073867cb43a72a1472",
     "packages": [
         {
             "name": "pictomancer/pictomancer",
-            "version": "v0.4.0",
+            "version": "v0.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pictomancer/php-sdk.git",
-                "reference": "822dbbc53ccc70cd025e846daf5ae4ac542cc28a"
+                "reference": "1d5a76a70d0537dcb8b694543ed29397d6f760c2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pictomancer/php-sdk/zipball/822dbbc53ccc70cd025e846daf5ae4ac542cc28a",
-                "reference": "822dbbc53ccc70cd025e846daf5ae4ac542cc28a",
+                "url": "https://api.github.com/repos/pictomancer/php-sdk/zipball/1d5a76a70d0537dcb8b694543ed29397d6f760c2",
+                "reference": "1d5a76a70d0537dcb8b694543ed29397d6f760c2",
                 "shasum": ""
             },
             "require": {
@@ -59,10 +59,10 @@
                 "webp"
             ],
             "support": {
-                "source": "https://github.com/pictomancer/php-sdk/tree/v0.4.0",
+                "source": "https://github.com/pictomancer/php-sdk/tree/v0.6.0",
                 "issues": "https://github.com/pictomancer/php-sdk/issues"
             },
-            "time": "2026-08-03T10:32:20+00:00"
+            "time": "2026-08-17T23:29:56+00:00"
         }
     ],
     "packages-dev": [
