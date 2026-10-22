@@ -126,6 +126,28 @@ class Pictomancer_Optimizer_Service {
 		return $result;
 	}
 
+	/**
+	 * @return string png bytes with the background removed
+	 * @throws \Pictomancer\PictomancerException on transport or API error
+	 */
+	public function remove_background_bytes( string $bytes, string $mime_type ): string {
+		$result = $this->client->removeBackground( $this->to_data_uri( $bytes, $mime_type ), [ 'format' => 'png' ] );
+
+		if ( ! is_string( $result ) ) {
+			throw new \Pictomancer\PictomancerException( 'expected inline bytes from remove_background' );
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Name for the cutout of `$filename`: same base plus a suffix, always png
+	 * because the cutout carries an alpha channel whatever the source format.
+	 */
+	public function cutout_filename( string $filename ): string {
+		return pathinfo( $filename, PATHINFO_FILENAME ) . '-nobg.png';
+	}
+
 	private function to_data_uri( string $bytes, string $mime_type ): string {
 		return 'data:' . $mime_type . ';base64,' . base64_encode( $bytes );
 	}

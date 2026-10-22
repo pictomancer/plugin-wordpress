@@ -12,6 +12,7 @@ class Pictomancer {
 	private $optimization;
 	private $rest_api;
 	private $debug;
+	private $background_removal;
 
 	public static function get_instance() {
 		if ( null === self::$instance ) {
@@ -27,6 +28,8 @@ class Pictomancer {
 		$this->optimization = new Pictomancer_Optimization();
 		$this->rest_api     = new Pictomancer_REST_API();
 		$this->debug        = new Pictomancer_Debug();
+
+		$this->background_removal = new Pictomancer_Background_Removal();
 	}
 
 	private function includes() {
@@ -42,6 +45,7 @@ class Pictomancer {
 		require_once plugin_dir_path( __FILE__ ) . 'class-pictomancer-optimization.php';
 		require_once plugin_dir_path( __FILE__ ) . 'class-pictomancer-rest-api.php';
 		require_once plugin_dir_path( __FILE__ ) . 'class-pictomancer-debug.php';
+		require_once plugin_dir_path( __FILE__ ) . 'class-pictomancer-background-removal.php';
 	}
 
 }
