@@ -4,7 +4,7 @@ Tags: image optimization, compression, performance, media library, images
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.2.0
+Stable tag: 0.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -27,6 +27,7 @@ The plugin hooks into the standard WordPress upload flow, so it works with anyth
 * Safe by design: an optimized file is only kept when it is actually smaller than the input, and the pristine `original_image` WordPress keeps for regeneration is never touched.
 * Regeneration friendly: if you regenerate thumbnails, the new sizes are re-optimized while the main file is never compressed twice (no generation loss).
 * Dashboard: real accumulated savings (bytes and percentage) and live API health, right in wp-admin.
+* Remove background: one click in the Media Library cuts out the subject and adds it as a new PNG with a transparent background. The original stays untouched.
 * Debug mode: optional logging to a protected, non-guessable file for troubleshooting.
 * Configuration via constants: define `PICTOMANCER_API_KEY` (and optionally `PICTOMANCER_API_URL`) in wp-config.php to keep secrets out of the database.
 * Developer hooks: `pictomancer_log` action and `pictomancer_debug_logging_enabled` filter for custom workflows.
@@ -68,7 +69,7 @@ This plugin relies on one external service to function: the Pictomancer.ai image
 
 No data is sent until you explicitly enable optimization in the plugin settings; it is off by default. While disabled, the plugin makes no remote requests at all.
 
-What is sent and when: once optimization is enabled, each time an image is optimized (on upload or when WordPress generates thumbnail sizes), the image bytes are sent to the API endpoint (https://api.pictomancer.ai by default, or the URL you configure in the settings) together with your API key, if you have set one, and the selected compression quality. The API returns the optimized image, which is saved in place. No data about your site's visitors is collected or sent.
+What is sent and when: once optimization is enabled, each time an image is optimized (on upload or when WordPress generates thumbnail sizes), the image bytes are sent to the API endpoint (https://api.pictomancer.ai by default, or the URL you configure in the settings) together with your API key, if you have set one, and the selected compression quality. The API returns the optimized image, which is saved in place. When you click "Remove background" on an image, that image's bytes are sent the same way and the API returns the cutout, which is saved as a new image. No data about your site's visitors is collected or sent.
 
 This service is provided by Pictomancer.ai. By using the plugin you agree to its terms and privacy policy:
 
@@ -90,6 +91,9 @@ This regenerates build/pictomancer-admin.js.
 
 == Changelog ==
 
+= 0.3.0 =
+* New "Remove background" action in the Media Library (list view row action and the attachment details). It saves the cutout as a new PNG image with a transparent background; the original is never modified.
+
 = 0.2.0 =
 * New "Compression mode" setting: choose between the existing fixed quality and a new quality target (SSIM) mode where the API finds the smallest file that still meets a visual similarity target (0.80-1.00, default 0.95).
 * Quality target applies to JPEG, WebP and AVIF; PNG and GIF automatically fall back to fixed quality.
@@ -105,6 +109,9 @@ This regenerates build/pictomancer-admin.js.
 * Initial release: automatic compression of uploads and thumbnails, savings dashboard with live API health, debug logging, wp-config constants for API credentials.
 
 == Upgrade Notice ==
+
+= 0.3.0 =
+Adds a "Remove background" action to the Media Library. Nothing changes until you use it, and the original images are never modified.
 
 = 0.2.0 =
 Adds an optional quality target (SSIM) compression mode. Existing settings and the default fixed-quality behavior are unchanged.

@@ -47,6 +47,7 @@ final class PluginBootstrapTest extends TestCase
         $this->assertContains('wp_generate_attachment_metadata', $registered);
         $this->assertContains('rest_api_init', $registered);
         $this->assertContains('admin_menu', $registered);
+        $this->assertContains('media_row_actions', $registered);
         $this->assertInstanceOf(Pictomancer::class, Pictomancer::get_instance());
     }
 }
