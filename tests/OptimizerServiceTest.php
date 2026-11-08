@@ -12,6 +12,7 @@ use Pictomancer_Optimizer_Service;
 final class OptimizerServiceTest extends TestCase
 {
     private const JPEG_BYTES = "\xFF\xD8\xFFoptimized";
+    private const PNG_BYTES = "\x89PNGcutout";
     private const RAW = 'rawimagebytes';
 
     private function newService(
@@ -291,5 +292,43 @@ final class OptimizerServiceTest extends TestCase
 
         $this->assertFalse($service->exceeds_limit(1024));
         $this->assertTrue($service->exceeds_limit(33 * 1024 * 1024));
+    }
+
+    public function testRemoveBackgroundReturnsCutoutBytes(): void
+    {
+        $transport = new RecordingTransport(new Response(200, ['content-type' => 'image/png'], self::PNG_BYTES));
+        $service = $this->newService($transport);
+
+        $out = $service->remove_background_bytes(self::RAW, 'image/jpeg');
+
+        $this->assertSame(self::PNG_BYTES, $out);
+    }
+
+    public function testRemoveBackgroundPostsToRemoveBackgroundEndpoint(): void
+    {
+        $transport = new RecordingTransport(new Response(200, ['content-type' => 'image/png'], self::PNG_BYTES));
+        $service = $this->newService($transport);
+
+        $service->remove_background_bytes(self::RAW, 'image/jpeg');
+
+        $this->assertStringEndsWith('/v1/remove_background', $transport->calls[0]['url']);
+    }
+
+    public function testRemoveBackgroundRequestsPngFromDataUri(): void
+    {
+        $transport = new RecordingTransport(new Response(200, ['content-type' => 'image/png'], self::PNG_BYTES));
+        $service = $this->newService($transport);
+
+        $service->remove_background_bytes(self::RAW, 'image/jpeg');
+
+        $expected = ['source' => 'data:image/jpeg;base64,' . base64_encode(self::RAW), 'format' => 'png'];
+        $this->assertSame($expected, $transport->lastBody());
+    }
+
+    public function testCutoutFilenameIsPngWithSuffix(): void
+    {
+        $service = $this->newService(new RecordingTransport($this->imageResponse(self::JPEG_BYTES)));
+
+        $this->assertSame('photo-scaled-nobg.png', $service->cutout_filename('photo-scaled.jpg'));
     }
 }
